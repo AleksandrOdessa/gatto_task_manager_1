@@ -155,7 +155,3 @@ public class DoTask {
         System.out.println("---------------------------");
     }
 }
-//    Task task = new Task(1,"Title","Description", LocalDateTime.now(),new User(1,"Bob","Black",new Department(1,"BOS"),Roles.CEO),new User(2,"Bob2","Black2",new Department(2,"BOS2"),Roles.EMPLOYEE));
-//      taskList.add(task);
-//              System.out.println(task);
-//              System.out.println(taskList);
