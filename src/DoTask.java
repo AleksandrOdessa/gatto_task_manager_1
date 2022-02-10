@@ -4,7 +4,6 @@ import users.Roles;
 import users.User;
 
 import java.io.*;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class DoTask {
@@ -22,21 +21,22 @@ public class DoTask {
     }
 
 
-    public static void startScanner() throws InputMismatchException {
-        Scanner sc = new Scanner(System.in);
+    public static void startProgram() throws InputMismatchException {
+        Scanner sc = startScanner();
+
         int valueFoeMenu = sc.nextInt();
-        String s = sc.nextLine();
         try {
             if (valueFoeMenu != 0 & valueFoeMenu < 4) {
                 switch (valueFoeMenu) {
                     case 1:
-                        System.out.println("In progress");
-                        break;
-                    case 2:
                         System.out.println("Create new User or for EXIT input please \"exit\" ");
                         User user = createUser();
                         writeUserInFile(user);
-                        addUserForList(user);
+                        break;
+                    case 2:
+
+                        System.out.println("In progress");
+//                        addUserForList(user);
                         break;
                     case 3:
                         System.out.println("In progress");
@@ -48,11 +48,11 @@ public class DoTask {
 
             } else {
                 System.out.println("Something Wrong, repeat input please");
-                startScanner();
+                startProgram();
             }
         } catch (InputMismatchException | IOException i) {
             System.out.println("Look what you inputing");
-            startScanner();
+            startProgram();
         }
 
 
@@ -90,38 +90,30 @@ public class DoTask {
 
     }
 
-    public static synchronized User createUser() {
+    public static synchronized User createUser() throws IOException {
         User user = new User();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            System.out.println("Press any");
-            while (!reader.readLine().equals("exit")) {
-                System.out.println("Input ID");
-                user.setId(Integer.parseInt(reader.readLine()));
-                System.out.println("Input name");
-                user.setName(reader.readLine());
-                System.out.println("Input LastName");
-                user.setLastName(reader.readLine());
-                System.out.println("Input Department");
-                Department department = createDepartment(reader);
-                user.setDepartment(department);
-                System.out.println("Choose Role. M - manager, E - employee");
-                chooseRole(reader.readLine(), user);
+        Scanner reader = startScanner();
+        System.out.println("Input ID");
+        user.setId(Integer.parseInt(reader.nextLine()));
+        System.out.println("Input name");
+        user.setName(reader.nextLine());
+        System.out.println("Input LastName");
+        user.setLastName(reader.nextLine());
+        System.out.println("Input Department");
+        Department department = createDepartment(reader);
+        user.setDepartment(department);
+        System.out.println("Choose Role. M - manager, E - employee");
+        chooseRole(reader.nextLine(), user);
 
-
-                break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return user;
     }
 
-    public static Department createDepartment(BufferedReader reader) throws IOException {
+    public static Department createDepartment(Scanner sc) throws IOException {
         Department department = new Department();
         System.out.println("Input ID of Department");
-        department.setId(Integer.parseInt(reader.readLine()));
+        department.setId(Integer.parseInt(sc.nextLine()));
         System.out.println("Input Name of Department");
-        department.setNameDepartment(reader.readLine());
+        department.setNameDepartment(sc.nextLine());
 
         return department;
 
@@ -134,24 +126,31 @@ public class DoTask {
             user.setRoles(Roles.EMPLOYEE);
         } else {
             System.out.println("You wrong");
-            return;
         }
     }
 
     public static void handlerScanner() {
 
         System.out.println("HI");
-        startScanner();
+        startProgram();
+
     }
 
 
     public static void showMenu() {
         System.out.println("CHOOSE what you want to do");
         System.out.println("---------------------------");
-        System.out.println("Appoint new task, input 1");
-        System.out.println("Add new employee, input 2");
-        System.out.println("Check their tasks, input 3");
+        System.out.println("Add new employee, input 1");
+        System.out.println("Show all employees, input 2");
+        System.out.println("Appoint new task, input 3");
+        System.out.println("Check their tasks, input 4");
         System.out.println("For EXIT, input 0");
         System.out.println("---------------------------");
+    }
+
+    public static Scanner startScanner() {
+        Scanner sc = new Scanner(System.in);
+
+        return sc;
     }
 }
