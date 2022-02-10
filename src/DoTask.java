@@ -40,10 +40,12 @@ public class DoTask {
                         System.out.println("Create new User or for EXIT input please \"exit\" ");
                         users = createUsers();
                         showAllEmployeeFromList(users);
+                        writeUserInFile(users);
                        break;
                     case 2:
                         System.out.println("---------SHOW FILE--------------------");
                         readUserFromFile();
+                        showAllEmployeeFromList(users);
                         System.out.println("-----------------------------");
                         break;
                     case 3:
@@ -70,8 +72,7 @@ public class DoTask {
     public static synchronized void readUserFromFile() throws FileNotFoundException {
         try (FileInputStream stream = new FileInputStream(User.pathListFileAllUsers);
              ObjectInputStream obj = new ObjectInputStream(stream)) {
-            User user = (User) obj.readObject();
-            System.out.println(user);
+             users = (List<User>) obj.readObject();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,14 +82,14 @@ public class DoTask {
     }
 
 
-    public static synchronized void writeUserInFile(User user) throws IOException {
-        try (FileOutputStream steram = new FileOutputStream(User.pathListFileAllUsers);
-             ObjectOutputStream obj = new ObjectOutputStream(steram)) {
-            obj.writeObject(user);
+    public static synchronized void writeUserInFile(List<User> users) throws IOException {
+        try (FileOutputStream stream = new FileOutputStream(User.pathListFileAllUsers);
+             ObjectOutputStream obj = new ObjectOutputStream(stream)) {
+            obj.writeObject(users);
 
         } catch (FileNotFoundException f) {
             System.out.println("Check your path");
-            writeUserInFile(user);
+            writeUserInFile(users);
         }
 
 
@@ -119,8 +120,6 @@ public class DoTask {
                user.setDepartment(department);
                System.out.print("Choose Role. M - manager, E - employee: ");
                chooseRole(reader2.nextLine(), user);
-
-               writeUserInFile(user);
 
                users.add(user);
 
