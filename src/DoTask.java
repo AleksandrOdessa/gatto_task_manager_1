@@ -21,6 +21,31 @@ public class DoTask {
 
     }
 
+    public static synchronized void foundAndDeleteUserId(List<User> users) throws IOException {
+        Scanner sc = startScanner();
+        boolean search = false;//Вот тут не понял
+        int foundId = sc.nextInt();
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()){
+            User u = iterator.next();
+            if(u.getId() == foundId){
+                System.out.println(u);
+                iterator.remove();
+                System.out.println("User with ID = "+foundId+ " DELETED!");
+                search = true;
+                ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(User.pathListFileAllUsers));
+                obj.writeObject(users);
+                obj.close();
+
+            }
+
+        }if(!search){  ////Вот тут не понял
+            System.out.println("NOT FOUND");
+        }
+
+
+    }
+
 
     public static void showAllEmployeeFromList(List<User> users) {
         for (User u : users) {
@@ -49,7 +74,10 @@ public class DoTask {
                         System.out.println("-----------------------------");
                         break;
                     case 3:
-
+                        System.out.println("---------FOUND & DELETE User------------------");
+                        readUserFromFile();
+                        foundAndDeleteUserId(users);
+                        System.out.println("-----------------------------");
                        break;
                     case 0:
                         System.out.println("you is exit");
@@ -170,8 +198,8 @@ public class DoTask {
         System.out.println("CHOOSE what you want to do");
         System.out.println("---------------------------");
         System.out.println("Add new employee, input 1");
-        System.out.println("Show all employees, input 2");
-        System.out.println("Read all employees from file, input 3");
+        System.out.println("Read all employees, input 2");
+        System.out.println(" Found and Delete employees, input 3");
 
         System.out.println("Appoint new task, input 3");
         System.out.println("Check their tasks, input 4");
