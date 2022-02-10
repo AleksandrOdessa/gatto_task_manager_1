@@ -4,6 +4,7 @@ import users.Roles;
 import users.User;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class DoTask {
@@ -16,9 +17,44 @@ public class DoTask {
         showMenu();
         Thread.sleep(2000);
         handlerScanner();
+    }
+
+    public static void showAllTasks() throws FileNotFoundException {
+        try (FileInputStream stream = new FileInputStream(Task.PATH);
+             ObjectInputStream obj = new ObjectInputStream(stream)) {
+            taskList = (List<Task>) obj.readObject();
+            for(Task t:taskList){
+                System.out.println(t);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
 
+    public static synchronized List<Task> createNewTask() {
+        Scanner sc = startScanner();
+        Task task = new Task();
+        System.out.print("Input number of task: ");
+        task.setId(Integer.parseInt(sc.nextLine()));
+        System.out.print("Input title: ");
+        task.setTitle(sc.nextLine());
+        System.out.print("Input Description: ");
+        task.setDiscription(sc.nextLine());
+        task.setCreated(LocalDateTime.now());
 
+        taskList.add(task);
+        try {
+            ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(Task.PATH));
+            obj.writeObject(taskList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return taskList;
     }
 
     public static synchronized void foundAndDeleteUserId(List<User> users) throws IOException {
@@ -26,12 +62,12 @@ public class DoTask {
         boolean search = false;//Вот тут не понял
         int foundId = sc.nextInt();
         Iterator<User> iterator = users.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             User u = iterator.next();
-            if(u.getId() == foundId){
+            if (u.getId() == foundId) {
                 System.out.println(u);
                 iterator.remove();
-                System.out.println("User with ID = "+foundId+ " DELETED!");
+                System.out.println("User with ID = " + foundId + " DELETED!");
                 search = true;
                 ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(User.pathListFileAllUsers));
                 obj.writeObject(users);
@@ -39,7 +75,8 @@ public class DoTask {
 
             }
 
-        }if(!search){  ////Вот тут не понял
+        }
+        if (!search) {  ////Вот тут не понял
             System.out.println("NOT FOUND");
         }
 
@@ -59,14 +96,14 @@ public class DoTask {
 
         int valueFoeMenu = sc.nextInt();
         try {
-            if (valueFoeMenu != 0 & valueFoeMenu < 4) {
+            if (valueFoeMenu != 0 & valueFoeMenu < 7) {
                 switch (valueFoeMenu) {
                     case 1:
                         System.out.println("Create new User or for EXIT input please \"exit\" ");
                         users = createUsers();
                         showAllEmployeeFromList(users);
                         writeUserInFile(users);
-                       break;
+                        break;
                     case 2:
                         System.out.println("---------SHOW FILE--------------------");
                         readUserFromFile();
@@ -78,7 +115,17 @@ public class DoTask {
                         readUserFromFile();
                         foundAndDeleteUserId(users);
                         System.out.println("-----------------------------");
-                       break;
+                        break;
+                    case 4:
+                        System.out.println("---------Create new task------------------");
+                        createNewTask();
+                        System.out.println("-----------------------------");
+                        break;
+                    case 5:
+                        System.out.println("---------SHOW ALL task------------------");
+                        showAllTasks();
+                        System.out.println("-----------------------------");
+                        break;
                     case 0:
                         System.out.println("you is exit");
                         break;
@@ -100,7 +147,7 @@ public class DoTask {
     public static synchronized void readUserFromFile() throws FileNotFoundException {
         try (FileInputStream stream = new FileInputStream(User.pathListFileAllUsers);
              ObjectInputStream obj = new ObjectInputStream(stream)) {
-             users = (List<User>) obj.readObject();
+            users = (List<User>) obj.readObject();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,26 +181,26 @@ public class DoTask {
         System.out.print("How many you need have created users: ");
         int count = reader.nextInt();
         Scanner reader2 = startScanner();
-        for(int i=count;i>=1;i--){
-           try{
-               User user = new User();
-               System.out.print("Input ID: ");
-               user.setId(Integer.parseInt(reader2.nextLine()));
-               System.out.print("Input name: ");
-               user.setName(reader2.nextLine());
-               System.out.print("Input LastName: ");
-               user.setLastName(reader2.nextLine());
-               System.out.print("Input Department: ");
-               Department department = createDepartment(reader2);
-               user.setDepartment(department);
-               System.out.print("Choose Role. M - manager, E - employee: ");
-               chooseRole(reader2.nextLine(), user);
+        for (int i = count; i >= 1; i--) {
+            try {
+                User user = new User();
+                System.out.print("Input ID: ");
+                user.setId(Integer.parseInt(reader2.nextLine()));
+                System.out.print("Input name: ");
+                user.setName(reader2.nextLine());
+                System.out.print("Input LastName: ");
+                user.setLastName(reader2.nextLine());
+                System.out.print("Input Department: ");
+                Department department = createDepartment(reader2);
+                user.setDepartment(department);
+                System.out.print("Choose Role. M - manager, E - employee: ");
+                chooseRole(reader2.nextLine(), user);
 
-               users.add(user);
+                users.add(user);
 
-           } catch (NumberFormatException n){
-               createUsers();
-           }
+            } catch (NumberFormatException n) {
+                createUsers();
+            }
 
 
         }
@@ -164,13 +211,14 @@ public class DoTask {
 
     public static Department createDepartment(Scanner sc) throws IOException {
         Department department = new Department();
-       try{System.out.print("Input ID of Department: ");
-           department.setId(Integer.parseInt(sc.nextLine()));
-           System.out.print("Input Name of Department: ");
-           department.setNameDepartment(sc.nextLine());
-       }catch (NumberFormatException n){
-           createDepartment(sc);
-       }
+        try {
+            System.out.print("Input ID of Department: ");
+            department.setId(Integer.parseInt(sc.nextLine()));
+            System.out.print("Input Name of Department: ");
+            department.setNameDepartment(sc.nextLine());
+        } catch (NumberFormatException n) {
+            createDepartment(sc);
+        }
 
         return department;
 
@@ -201,8 +249,9 @@ public class DoTask {
         System.out.println("Read all employees, input 2");
         System.out.println(" Found and Delete employees, input 3");
 
-        System.out.println("Appoint new task, input 3");
-        System.out.println("Check their tasks, input 4");
+        System.out.println("Appoint new task, input 4");
+        System.out.println("Reading all tasks, input 5");
+        System.out.println("Check their tasks, input 6");
         System.out.println("For EXIT, input 0");
         System.out.println("---------------------------");
     }
