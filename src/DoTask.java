@@ -18,6 +18,14 @@ public class DoTask {
         handlerScanner();
 
 
+
+    }
+
+
+    public static void showAllEmployeeFromList(List<User> users) {
+        for (User u : users) {
+            System.out.println(u);
+        }
     }
 
 
@@ -30,17 +38,17 @@ public class DoTask {
                 switch (valueFoeMenu) {
                     case 1:
                         System.out.println("Create new User or for EXIT input please \"exit\" ");
-                        User user = createUser();
-                        writeUserInFile(user);
-                        break;
+                        users = createUsers();
+                        showAllEmployeeFromList(users);
+                       break;
                     case 2:
-
-                        System.out.println("In progress");
-//                        addUserForList(user);
+                        System.out.println("---------SHOW FILE--------------------");
+                        readUserFromFile();
+                        System.out.println("-----------------------------");
                         break;
                     case 3:
-                        System.out.println("In progress");
-                        break;
+
+                       break;
                     case 0:
                         System.out.println("you is exit");
                         break;
@@ -50,6 +58,7 @@ public class DoTask {
                 System.out.println("Something Wrong, repeat input please");
                 startProgram();
             }
+
         } catch (InputMismatchException | IOException i) {
             System.out.println("Look what you inputing");
             startProgram();
@@ -90,30 +99,51 @@ public class DoTask {
 
     }
 
-    public static synchronized User createUser() throws IOException {
-        User user = new User();
-        Scanner reader = startScanner();
-        System.out.print("Input ID: ");
-        user.setId(Integer.parseInt(reader.nextLine()));
-        System.out.print("Input name: ");
-        user.setName(reader.nextLine());
-        System.out.print("Input LastName: ");
-        user.setLastName(reader.nextLine());
-        System.out.print("Input Department: ");
-        Department department = createDepartment(reader);
-        user.setDepartment(department);
-        System.out.print("Choose Role. M - manager, E - employee: ");
-        chooseRole(reader.nextLine(), user);
+    public static synchronized List<User> createUsers() throws IOException {
 
-        return user;
+        Scanner reader = startScanner();
+        System.out.print("How many you need have created users: ");
+        int count = reader.nextInt();
+        Scanner reader2 = startScanner();
+        for(int i=count;i>=1;i--){
+           try{
+               User user = new User();
+               System.out.print("Input ID: ");
+               user.setId(Integer.parseInt(reader2.nextLine()));
+               System.out.print("Input name: ");
+               user.setName(reader2.nextLine());
+               System.out.print("Input LastName: ");
+               user.setLastName(reader2.nextLine());
+               System.out.print("Input Department: ");
+               Department department = createDepartment(reader2);
+               user.setDepartment(department);
+               System.out.print("Choose Role. M - manager, E - employee: ");
+               chooseRole(reader2.nextLine(), user);
+
+               writeUserInFile(user);
+
+               users.add(user);
+
+           } catch (NumberFormatException n){
+               createUsers();
+           }
+
+
+        }
+
+
+        return users;
     }
 
     public static Department createDepartment(Scanner sc) throws IOException {
         Department department = new Department();
-        System.out.println("Input ID of Department");
-        department.setId(Integer.parseInt(sc.nextLine()));
-        System.out.println("Input Name of Department");
-        department.setNameDepartment(sc.nextLine());
+       try{System.out.print("Input ID of Department: ");
+           department.setId(Integer.parseInt(sc.nextLine()));
+           System.out.print("Input Name of Department: ");
+           department.setNameDepartment(sc.nextLine());
+       }catch (NumberFormatException n){
+           createDepartment(sc);
+       }
 
         return department;
 
@@ -142,6 +172,8 @@ public class DoTask {
         System.out.println("---------------------------");
         System.out.println("Add new employee, input 1");
         System.out.println("Show all employees, input 2");
+        System.out.println("Read all employees from file, input 3");
+
         System.out.println("Appoint new task, input 3");
         System.out.println("Check their tasks, input 4");
         System.out.println("For EXIT, input 0");
