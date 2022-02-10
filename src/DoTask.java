@@ -93,16 +93,16 @@ public class DoTask {
     public static synchronized User createUser() throws IOException {
         User user = new User();
         Scanner reader = startScanner();
-        System.out.println("Input ID");
+        System.out.print("Input ID: ");
         user.setId(Integer.parseInt(reader.nextLine()));
-        System.out.println("Input name");
+        System.out.print("Input name: ");
         user.setName(reader.nextLine());
-        System.out.println("Input LastName");
+        System.out.print("Input LastName: ");
         user.setLastName(reader.nextLine());
-        System.out.println("Input Department");
+        System.out.print("Input Department: ");
         Department department = createDepartment(reader);
         user.setDepartment(department);
-        System.out.println("Choose Role. M - manager, E - employee");
+        System.out.print("Choose Role. M - manager, E - employee: ");
         chooseRole(reader.nextLine(), user);
 
         return user;
