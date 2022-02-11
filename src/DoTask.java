@@ -14,6 +14,8 @@ public class DoTask {
 
     public static void createdTask() throws InterruptedException {
         handlerScanner();
+        startScanner().close();
+        startScanner().reset();
     }
 
     public static Scanner startScanner() {
@@ -76,7 +78,6 @@ public class DoTask {
                             break;
                         case 6:
                             System.out.println("---------WORKFLOW------------------");
-                            readUserFromFile();
                             createWorkflow();
                             System.out.println("-----------------------------");
                             break;
@@ -123,10 +124,7 @@ public class DoTask {
                 createUsers();
             }
         }
-        reader.close();
-        reader2.close();
-        reader.reset();
-        reader.reset();
+
         return users;
     }
 
@@ -150,8 +148,7 @@ public class DoTask {
         if (!search) {  ////Вот тут не понял
             System.out.println("NOT FOUND");
         }
-        sc.close();
-        sc.reset();
+
     }
 
 //    public static User foundUsers() throws IOException {
@@ -222,8 +219,7 @@ public class DoTask {
             taskList.add(task);
         }
         writeTaskForFile(taskList);
-        sc.close();
-        sc.reset();
+
     }
 
     public static void writeTaskForFile(List<Task> t) {
@@ -281,6 +277,7 @@ public class DoTask {
                 task = t;
             } else {
                 System.out.println("\"NOT FOUND Task!!!!. Input please againe\"");
+                foundTask();
             }
         }
         return task;
@@ -297,6 +294,7 @@ public class DoTask {
                 user = u;
             } else {
                 System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
+                foundUsers();
             }
         }
         return user;
