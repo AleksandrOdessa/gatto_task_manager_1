@@ -76,6 +76,7 @@ public class DoTask {
                             break;
                         case 6:
                             System.out.println("---------WORKFLOW------------------");
+                            readUserFromFile();
                             createWorkflow();
                             System.out.println("-----------------------------");
                             break;
@@ -117,10 +118,15 @@ public class DoTask {
 
                 users.add(user);
 
+
             } catch (NumberFormatException n) {
                 createUsers();
             }
         }
+        reader.close();
+        reader2.close();
+        reader.reset();
+        reader.reset();
         return users;
     }
 
@@ -144,29 +150,29 @@ public class DoTask {
         if (!search) {  ////Вот тут не понял
             System.out.println("NOT FOUND");
         }
+        sc.close();
+        sc.reset();
     }
 
-    public static User foundUsers() throws IOException {
-        User user = null;
-        Scanner sc = startScanner();
-        int valueID = sc.nextInt();
-        if (!users.isEmpty()) {
-            System.out.println(valueID);
-            for (User u : users) {
-                if (valueID == u.getId()) {
-                    user = u;
-                }
-                if (valueID != u.getId()) {
-                    System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
-                    foundUsers();
-                }
-            }
-        }
-        if (users.isEmpty()) {
-            createUsers();
-        }
-        return user;
-    }
+//    public static User foundUsers() throws IOException {
+//        User user = null;
+//        Scanner sc = startScanner();
+//        int valueID = sc.nextInt();
+//        Iterator<User> iterator = users.iterator();
+//        if (!users.isEmpty()) {
+//            System.out.println(valueID);
+//            while (iterator.hasNext()) {
+//                User u = iterator.next();
+//                if(u.getId() == valueID){
+//                    user = u;
+//                }else {
+//                    System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
+//                    foundUsers();
+//                }
+//            }
+//        }
+//          return user;
+//    }
 
     public static synchronized void writeUserInFile(List<User> users) throws IOException {
         try (FileOutputStream stream = new FileOutputStream(User.pathListFileAllUsers);
@@ -199,7 +205,6 @@ public class DoTask {
 
 
     public static synchronized void createNewTask() {
-
         Scanner sc = startScanner();
         System.out.println("How many you nedd tasks");
         int countTasks = sc.nextInt();
@@ -217,6 +222,8 @@ public class DoTask {
             taskList.add(task);
         }
         writeTaskForFile(taskList);
+        sc.close();
+        sc.reset();
     }
 
     public static void writeTaskForFile(List<Task> t) {
@@ -244,7 +251,6 @@ public class DoTask {
     }
 
     public static void createWorkflow() throws IOException, InterruptedException {
-        readUserFromFile();
         Map<User, Task> bundle = new HashMap<>();
         if (users.isEmpty()) {
             createUsers();
@@ -254,6 +260,7 @@ public class DoTask {
         }
         showAllTasks();
         showAllEmployeeFromList(users);
+
         System.out.println("***********************");
         System.out.println("Input ID User");
         User user = foundUsers();
@@ -267,21 +274,32 @@ public class DoTask {
         Task task = null;
         Scanner sc = startScanner();
         int valueID = sc.nextInt();
-        if (!taskList.isEmpty()) {
-            for (Task t : taskList) {
-                if (valueID == t.getId()) {
-                    task = t;
-                }
-                if (valueID != t.getId()) {
-                    System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
-                    foundTask();
-                }
+        Iterator<Task> iterator = taskList.iterator();
+        while (iterator.hasNext()) {
+            Task t = iterator.next();
+            if (t.getId() == valueID) {
+                task = t;
+            } else {
+                System.out.println("\"NOT FOUND Task!!!!. Input please againe\"");
             }
         }
-        if (taskList.isEmpty()) {
-            createdTask();
-        }
         return task;
+    }
+
+    public static User foundUsers() throws IOException {
+        User user = null;
+        Scanner sc = startScanner();
+        int valueID = sc.nextInt();
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()) {
+            User u = iterator.next();
+            if (u.getId() == valueID) {
+                user = u;
+            } else {
+                System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
+            }
+        }
+        return user;
     }
 
 
