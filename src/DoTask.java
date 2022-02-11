@@ -14,19 +14,75 @@ public class DoTask {
 
 
     public static void createdTask() throws InterruptedException {
-        showMenu();
-        Thread.sleep(2000);
         handlerScanner();
+    }
+
+    public static void startProgram() throws InputMismatchException {
+        Scanner sc = startScanner();
+        int valueFoeMenu;
+        do {
+            showMenu();
+            valueFoeMenu = sc.nextInt();
+            try {
+                if (valueFoeMenu != 0 & valueFoeMenu < 7) {
+
+                    switch (valueFoeMenu) {
+                        case 1:
+                            System.out.println("Create new User or for EXIT input please \"exit\" ");
+                            users = createUsers();
+                            showAllEmployeeFromList(users);
+                            writeUserInFile(users);
+                            break;
+                        case 2:
+                            System.out.println("---------SHOW FILE--------------------");
+                            readUserFromFile();
+                            showAllEmployeeFromList(users);
+                            System.out.println("-----------------------------");
+                            break;
+                        case 3:
+                            System.out.println("---------FOUND & DELETE User------------------");
+                            readUserFromFile();
+                            foundAndDeleteUserId(users);
+                            System.out.println("-----------------------------");
+                            break;
+                        case 4:
+                            System.out.println("---------Create new task------------------");
+                            createNewTask();
+                            showAllTasks();
+                            System.out.println("-----------------------------");
+                            break;
+                        case 5:
+                            System.out.println("---------SHOW ALL task------------------");
+                            showAllTasks();
+                            System.out.println("-----------------------------");
+                            break;
+                        case 6:
+                            System.out.println("---------WORKFLOW------------------");
+                            createWorkflow();
+                            System.out.println("-----------------------------");
+                            break;
+                        case 0:
+                            System.out.println("you is exit");
+                            break;
+                    }
+                } else {
+                    System.out.println("Something Wrong, repeat input please");
+                    startProgram();
+                }
+            } catch (InputMismatchException | IOException | InterruptedException i) {
+                System.out.println("Look what you inputing");
+                startProgram();
+            }
+        } while (valueFoeMenu != 0);
     }
 
     public static void showAllTasks() throws FileNotFoundException {
         try (FileInputStream stream = new FileInputStream(Task.PATH);
              ObjectInputStream obj = new ObjectInputStream(stream)) {
             taskList = (List<Task>) obj.readObject();
-            for(Task t:taskList){
+            for (Task t : taskList) {
                 System.out.println(t);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -35,27 +91,37 @@ public class DoTask {
     }
 
 
-    public static synchronized List<Task> createNewTask() {
-        Scanner sc = startScanner();
-        Task task = new Task();
-        System.out.print("Input number of task: ");
-        task.setId(Integer.parseInt(sc.nextLine()));
-        System.out.print("Input title: ");
-        task.setTitle(sc.nextLine());
-        System.out.print("Input Description: ");
-        task.setDiscription(sc.nextLine());
-        task.setCreated(LocalDateTime.now());
+    public static synchronized void createNewTask() {
 
-        taskList.add(task);
-        try {
-            ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(Task.PATH));
-            obj.writeObject(taskList);
+        Scanner sc = startScanner();
+        System.out.println("How many you nedd tasks");
+        int countTasks = sc.nextInt();
+        for (int i = 0; i < countTasks; i++) {
+            Task task = new Task();
+            Scanner sc2 = startScanner();
+            System.out.print("Input number of task: ");
+            task.setId(Integer.parseInt(sc2.nextLine()));
+            System.out.print("Input title: ");
+            task.setTitle(sc2.nextLine());
+            System.out.print("Input Description: ");
+            task.setDiscription(sc2.nextLine());
+            task.setCreated(LocalDateTime.now());
+
+            taskList.add(task);
+        }
+        writeTaskForFile(taskList);
+    }
+
+    public static void writeTaskForFile(List<Task> t) {
+        try (ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(Task.PATH))) {
+            obj.writeObject(t);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return taskList;
     }
+
 
     public static synchronized void foundAndDeleteUserId(List<User> users) throws IOException {
         Scanner sc = startScanner();
@@ -72,15 +138,11 @@ public class DoTask {
                 ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(User.pathListFileAllUsers));
                 obj.writeObject(users);
                 obj.close();
-
             }
-
         }
         if (!search) {  ////Вот тут не понял
             System.out.println("NOT FOUND");
         }
-
-
     }
 
 
@@ -90,59 +152,6 @@ public class DoTask {
         }
     }
 
-
-    public static void startProgram() throws InputMismatchException {
-        Scanner sc = startScanner();
-
-        int valueFoeMenu = sc.nextInt();
-        try {
-            if (valueFoeMenu != 0 & valueFoeMenu < 7) {
-                switch (valueFoeMenu) {
-                    case 1:
-                        System.out.println("Create new User or for EXIT input please \"exit\" ");
-                        users = createUsers();
-                        showAllEmployeeFromList(users);
-                        writeUserInFile(users);
-                        break;
-                    case 2:
-                        System.out.println("---------SHOW FILE--------------------");
-                        readUserFromFile();
-                        showAllEmployeeFromList(users);
-                        System.out.println("-----------------------------");
-                        break;
-                    case 3:
-                        System.out.println("---------FOUND & DELETE User------------------");
-                        readUserFromFile();
-                        foundAndDeleteUserId(users);
-                        System.out.println("-----------------------------");
-                        break;
-                    case 4:
-                        System.out.println("---------Create new task------------------");
-                        createNewTask();
-                        System.out.println("-----------------------------");
-                        break;
-                    case 5:
-                        System.out.println("---------SHOW ALL task------------------");
-                        showAllTasks();
-                        System.out.println("-----------------------------");
-                        break;
-                    case 0:
-                        System.out.println("you is exit");
-                        break;
-                }
-
-            } else {
-                System.out.println("Something Wrong, repeat input please");
-                startProgram();
-            }
-
-        } catch (InputMismatchException | IOException i) {
-            System.out.println("Look what you inputing");
-            startProgram();
-        }
-
-
-    }
 
     public static synchronized void readUserFromFile() throws FileNotFoundException {
         try (FileInputStream stream = new FileInputStream(User.pathListFileAllUsers);
@@ -170,10 +179,6 @@ public class DoTask {
 
     }
 
-    public static synchronized void addUserForList(User user) {
-        users.add(user);
-
-    }
 
     public static synchronized List<User> createUsers() throws IOException {
 
@@ -201,11 +206,7 @@ public class DoTask {
             } catch (NumberFormatException n) {
                 createUsers();
             }
-
-
         }
-
-
         return users;
     }
 
@@ -219,9 +220,7 @@ public class DoTask {
         } catch (NumberFormatException n) {
             createDepartment(sc);
         }
-
         return department;
-
     }
 
     public static void chooseRole(String s, User user) {
@@ -251,14 +250,78 @@ public class DoTask {
 
         System.out.println("Appoint new task, input 4");
         System.out.println("Reading all tasks, input 5");
-        System.out.println("Check their tasks, input 6");
+        System.out.println("Create workflow, input 6");
         System.out.println("For EXIT, input 0");
         System.out.println("---------------------------");
     }
 
+    public static void createWorkflow() throws IOException, InterruptedException {
+        readUserFromFile();
+        Map<User, Task> bundle = new HashMap<>();
+        if (users.isEmpty()) {
+            createUsers();
+        }
+        if (taskList.isEmpty()) {
+            createdTask();
+        }
+        showAllTasks();
+        showAllEmployeeFromList(users);
+        System.out.println("***********************");
+        System.out.println("Input ID User");
+        User user = foundUsers();
+        System.out.println("Input ID Task");
+        Task task = foundTask();
+        bundle.put(user, task);
+        System.out.println(bundle);
+
+    }
+
+    public static User foundUsers() throws IOException {
+        User user=null;
+        Scanner sc = startScanner();
+        int valueID = sc.nextInt();
+        if(!users.isEmpty()){
+            System.out.println(valueID);
+            for (User u : users) {
+                if (valueID == u.getId()) {
+                    user = u;
+                }
+                if(valueID!= u.getId()){
+                    System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
+                    foundUsers();
+                }
+            }
+        }if(users.isEmpty()){
+            createUsers();
+        }
+
+        return user;
+    }
+
+    public static Task foundTask() throws InterruptedException {
+        Task task=null;
+        Scanner sc = startScanner();
+        int valueID = sc.nextInt();
+        if(!taskList.isEmpty()){
+            for (Task t : taskList) {
+                if (valueID == t.getId()) {
+                    task = t;
+                }
+                if(valueID!= t.getId()){
+                    System.out.println("\"NOT FOUND USER!!!!. Input please againe\"");
+                    foundTask();
+                }
+            }
+        }if(taskList.isEmpty()){
+            createdTask();
+        }
+
+        return task;
+    }
+
+
     public static Scanner startScanner() {
         Scanner sc = new Scanner(System.in);
-
         return sc;
     }
 }
